@@ -1,30 +1,63 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import USER_LOGIN from "../gql/mutate/loginUser";
+import { useMutation } from "@apollo/client";
+import { userAuthContextAPI } from "../context/UserAuthContext";
 
 function Login() {
+  const { setUserAuthData, setIsLoggedIn } = useContext(userAuthContextAPI)
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [login] = useMutation(USER_LOGIN);
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: ""
+  })
   const navigate = useNavigate()
 
+  const loginUser = async (e) => {
+    e.preventDefault();
+   const {data : userDataLoggedIn} =  await login({
+      variables: {
+        "email": loginData.email,
+        "password": loginData.password
+      }
+    });
+    setUserAuthData({
+      verifyUser:{
+        email : userDataLoggedIn.login.email,
+        name: userDataLoggedIn.login.name,
+        _id: userDataLoggedIn.login._id
+      }
+    })
+    setIsLoggedIn(true)
+
+    setLoginData({
+      email: "",
+      password: ""
+    })
+    navigate("/")
+
+  }
 
   return (
     <div className="container">
       <div className="row mt-5">
         <div className="col-sm-4 offset-sm-4">
           <h1 className="text-center">Login</h1>
-          <form>
+          <form onSubmit={loginUser}>
             <input
               className="form-control mt-2"
               placeholder="Enter email"
               type="email"
-              onChange={(e) => setEmail(e.target.value)}
+              value={loginData.email}
+              onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
             />
             <input
               className="form-control mt-2"
               placeholder="Enter password"
               type="password"
-              onChange={(e) => setPassword(e.target.value)}
+              value={loginData.password}
+              onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
             />
             <button type="submit" className="btn btn-primary mt-2">
               Submit

@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 import env from "../config/index.js";
 
-// mongoose
-//   .connect(env.dbUrl)
-//   .then(() => console.log("DB conneced"))
-//   .catch((error) => console.log("Error: " + error.message));
-
 let isConnected;
 let db;
 

@@ -77,7 +77,7 @@ await server.start();
 app.use(
   '/',
   cookieParser(),
-  cors({ credentials: true, origin: ['https://www.your-app.example', 'https://studio.apollographql.com'] }),
+  cors({ origin: ['http://localhost:5173', 'https://studio.apollographql.com'], credentials: true, }),
   express.json(),
   // expressMiddleware accepts the same arguments:
   // an Apollo Server instance and optional configuration options

@@ -27,7 +27,7 @@ function CreateTweet() {
                             <label htmlFor="floatingTextarea2">Tweet</label>
                         </div>
                         <button type="submit" className="btn btn-primary mt-2">
-                            Create
+                            Create tweet
                         </button>
                     </form>
                 </div>

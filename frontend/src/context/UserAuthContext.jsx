@@ -2,7 +2,6 @@ import { createContext, useEffect, useState } from "react"
 import VERIFY_USER from "../gql/query/verify";
 import { useQuery } from "@apollo/client";
 
-
 // eslint-disable-next-line react-refresh/only-export-components
 export const userAuthContextAPI = createContext()
 
@@ -12,6 +11,8 @@ function UserAuthProvider({ children }) {
 
   const [userAuthData, setUserAuthData] = useState({})
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [searchEmail, setSearchEmail] = useState("")
 
   useEffect(() => {
     if (!error && !loading) {
@@ -24,7 +25,7 @@ function UserAuthProvider({ children }) {
   }, [data, error, loading])
 
   return (
-    <userAuthContextAPI.Provider value={{ userAuthData, setUserAuthData, isLoggedIn, setIsLoggedIn }}>{children}</userAuthContextAPI.Provider>
+    <userAuthContextAPI.Provider value={{ userAuthData, setUserAuthData, isLoggedIn, setIsLoggedIn, searchEmail, setSearchEmail }}>{children}</userAuthContextAPI.Provider>
   )
 }
 

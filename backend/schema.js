@@ -2,6 +2,7 @@ export const typeDefs = `
   type User {
     _id: ID!
     name: String!
+    username: String!
     email: String!
     password: String!
     tweets: [Tweet]
@@ -12,13 +13,14 @@ export const typeDefs = `
     title: String!
     imgUrl: String!
     description: String!
-    userId: ID!
+    userId: ID
+    user: User
   }
 
   type Query {
     users: [User]
-    user(_id: ID!): User
-    verifyUser:User
+    user(username: String!): User
+    verifyUser: User
     tweets: [Tweet]
     tweet(_id: ID!): Tweet
     tweetsByUser(userId: ID!): [Tweet]
@@ -46,7 +48,8 @@ export const typeDefs = `
   }
 
   input AddUserInput{
-    name: String !
+    name: String!
+    username: String!
     email: String!
     password: String
   }

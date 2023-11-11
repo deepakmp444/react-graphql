@@ -7,7 +7,6 @@ const GET_ALL_USER = gql`
       _id
       email
       name
-      password
    }
 }
 `;

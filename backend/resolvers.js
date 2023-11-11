@@ -7,7 +7,7 @@ export const resolvers = {
     users: async () => await userModel.find(),
 
     user: async (_, args, context, info) => {
-      return await userModel.findById({ _id: args._id })
+      return await userModel.findOne({ username: args.username })
     },
 
     verifyUser: async (_, args, context) => {
@@ -20,6 +20,7 @@ export const resolvers = {
         throw new Error(null)
       }
     },
+
     tweets: async () => await tweetModel.find(),
 
     tweet: async (_, args) => {
@@ -37,7 +38,16 @@ export const resolvers = {
 
   User: {
     tweets: async (parent, args) => {
+      console.log('tweets parent:', parent)
       const data = await tweetModel.find({ userId: parent._id })
+      return data
+    }
+  },
+
+  Tweet: {
+    user: async (parent, args) => {
+      console.log('parent:', parent)
+      const data = await userModel.findById({ _id: parent.userId })
       return data
     }
   },
@@ -45,26 +55,31 @@ export const resolvers = {
   Mutation: {
     login: async (_, args, context) => {
       const user = await userModel.findOne({ email: args.email })
-      if (args.password === user.password) {
-        const options = {
-          expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-          secure: true,
-          httpOnly: true,
-          sameSite: "none",
-          path: "/",
-        };
-        const userToken = {
-          email: user.email,
-          _id: user._id,
-          name: user.name
+      if(user){
+        if (args.password === user.password) {
+          const options = {
+            expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+            secure: true,
+            httpOnly: true,
+            sameSite: "none",
+            path: "/",
+          };
+          const userToken = {
+            email: user.email,
+            _id: user._id,
+            name: user.name
+          }
+          const gqltolem = jwt.sign(userToken, "12121212", { expiresIn: "1d" })
+          context.res.cookie("gqltoken", gqltolem, options)
+  
+          return user
+        } else {
+          throw new Error("Password does not matched")
         }
-        const gqltolem = jwt.sign(userToken, "12121212", { expiresIn: "1d" })
-        context.res.cookie("gqltoken", gqltolem, options)
-
-        return user
-      } else {
-        throw new Error("Password does not matched")
+      }else{
+        throw new Error("User not found")
       }
+      
     },
 
     logout: async (_, args, context) => {
@@ -75,6 +90,7 @@ export const resolvers = {
     addUser: async (parent, { user }) => {
       const data = await userModel.create({
         name: user.name,
+        username: user.username,
         email: user.email,
         password: user.password
       });

@@ -1,11 +1,13 @@
 import { useMutation } from "@apollo/client";
 import ADD_USER from "../gql/mutate/createAccount";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 function CreateAccount() {
 
     const [userData, setUserData] = useState({
         name: "",
+        username: "",
         email: "",
         password: ""
     })
@@ -19,22 +21,29 @@ function CreateAccount() {
     const handleAccount = async (e) => {
         e.preventDefault()
 
-        await addUser({
-            variables: {
-                "user": {
-                    "name": userData.name,
-                    "email": userData.email,
-                    "password": userData.password
+        try {
+            await addUser({
+                variables: {
+                    "user": {
+                        "name": userData.name,
+                        "username": userData.username,
+                        "email": userData.email,
+                        "password": userData.password
+                    }
                 }
-            }
-        });
-
-        setUserData({
-            email: "",
-            name: "",
-            password: ""
-        })
-        console.log('userData:', userData)
+            });
+            toast.success("Account created!")
+    
+            setUserData({
+                email: "",
+                name: "",
+                username: "",
+                password: ""
+            })
+            console.log('userData:', userData)
+        } catch (error) {
+            toast.error(error.message)
+        }
 
     }
 
@@ -51,6 +60,13 @@ function CreateAccount() {
                                 type="text"
                                 value={userData.name}
                                 onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                            />
+                            <input
+                                className="form-control mt-2"
+                                placeholder="Enter username"
+                                type="text"
+                                value={userData.username}
+                                onChange={(e) => setUserData({ ...userData, username: e.target.value })}
                             />
                             <input
                                 className="form-control mt-2"

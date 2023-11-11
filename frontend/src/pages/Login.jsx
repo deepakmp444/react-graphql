@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import USER_LOGIN from "../gql/mutate/loginUser";
 import { useMutation } from "@apollo/client";
 import { userAuthContextAPI } from "../context/UserAuthContext";
+import toast from "react-hot-toast";
 
 function Login() {
   const { setUserAuthData, setIsLoggedIn } = useContext(userAuthContextAPI)
@@ -16,26 +17,30 @@ function Login() {
 
   const loginUser = async (e) => {
     e.preventDefault();
-   const {data : userDataLoggedIn} =  await login({
-      variables: {
-        "email": loginData.email,
-        "password": loginData.password
-      }
-    });
-    setUserAuthData({
-      verifyUser:{
-        email : userDataLoggedIn.login.email,
-        name: userDataLoggedIn.login.name,
-        _id: userDataLoggedIn.login._id
-      }
-    })
-    setIsLoggedIn(true)
-
-    setLoginData({
-      email: "",
-      password: ""
-    })
-    navigate("/")
+    try {
+      const {data : userDataLoggedIn} =  await login({
+        variables: {
+          "email": loginData.email,
+          "password": loginData.password
+        }
+      });
+      setUserAuthData({
+        verifyUser:{
+          email : userDataLoggedIn.login.email,
+          name: userDataLoggedIn.login.name,
+          _id: userDataLoggedIn.login._id
+        }
+      })
+      setIsLoggedIn(true)
+      toast.success("Login Successfull!")
+      setLoginData({
+        email: "",
+        password: ""
+      })
+      navigate("/")
+    } catch (error) {
+      toast.error(error.message)
+    }
 
   }
 
